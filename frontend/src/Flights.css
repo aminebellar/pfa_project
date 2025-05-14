@@ -1,0 +1,103 @@
+/* Animation de l'avion volant */
+@keyframes flyPlane {
+  0% {
+    left: -50px;
+    top: 20px;
+  }
+  100% {
+    left: calc(100% - 150px); /* L'avion se déplace jusqu'à la fin de l'écran */
+    top: 20px;
+  }
+}
+
+/* Style pour l'avion */
+.plane {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background-image: url('https://www.example.com/plane-icon.png'); /* Remplacez par l'URL de l'icône de l'avion */
+  background-size: contain;
+  background-repeat: no-repeat;
+  animation: flyPlane 10s linear infinite;
+}
+
+/* Mise en forme des cartes de vol */
+.flight-card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+}
+
+.flight-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+}
+
+.flight-card-header {
+  background-color: #4f46e5;
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+}
+
+.flight-card-body {
+  padding: 20px;
+}
+
+.flight-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flight-details .city {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.flight-details .time {
+  font-size: 14px;
+  color: #555;
+}
+
+.flight-price {
+  font-size: 18px;
+  font-weight: bold;
+  color: #4f46e5;
+}
+
+.flight-seats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flight-seats .seat-count {
+  font-size: 14px;
+  color: #555;
+}
+
+.flight-seats button {
+  background-color: #4f46e5;
+  color: white;
+  border-radius: 8px;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+}
+
+.flight-seats button:hover {
+  background-color: #4338ca;
+}
+
+.footer {
+  background-color: #4f46e5;
+  color: white;
+  text-align: center;
+  padding: 15px;
+}
