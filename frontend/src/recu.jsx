@@ -5,13 +5,21 @@ const Recu = () => {
   const { state } = useLocation();
   const { flight, seats, totalPrice, passengers } = state || {};
 
-  if (!flight || !passengers) {
+  if (!flight || !passengers || !seats) {
     return (
       <div className="text-center mt-20 text-lg text-red-600">
         Aucune donnée de réservation trouvée.
       </div>
     );
   }
+ 
+  // Calcul du total à payer
+  const calculateTotalPrice = () => {
+    const pricePerSeat = flight.price || 0;
+    return pricePerSeat * seats.length;  // total en fonction du nombre de sièges
+  };
+
+  const calculatedTotalPrice = totalPrice || calculateTotalPrice();  // Si totalPrice est défini, utiliser celui-ci
 
   return (
     <div className="max-w-5xl mx-auto mt-10 px-6">
@@ -32,14 +40,14 @@ const Recu = () => {
             <label className="font-semibold text-gray-900">Arrivée :</label> {flight.arrival_city} à {new Date(flight.arrival_time).toLocaleString()}
           </div>
           <div>
-            <label className="font-semibold text-gray-900">Nombre de sièges :</label> {seats}
+            <label className="font-semibold text-gray-900">Nombre de sièges :</label> {seats.length} ({seats.join(", ")})
           </div>
           <div>
             <label className="font-semibold text-gray-900">Prix unitaire :</label> {flight.price} €
           </div>
           <div className="pt-4">
             <label className="text-xl font-bold text-green-700">💶 Total à payer :</label> 
-            <span className="text-black font-semibold ml-2">{totalPrice} €</span>
+            <span className="text-black font-semibold ml-2">{calculatedTotalPrice} €</span>
           </div>
         </div>
 
@@ -65,7 +73,7 @@ const Recu = () => {
       <div className="flex justify-center mt-10">
         <Link
           to="/paiement"
-          state={{ flight, seats, totalPrice, passengers }}
+          state={{ flight, seats, totalPrice: calculatedTotalPrice, passengers }}
           className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition"
         >
           Procéder au paiement 💳

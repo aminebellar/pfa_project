@@ -10,14 +10,11 @@ const Reservation = () => {
   const [error, setError] = useState(null);
   const [passengerName, setPassengerName] = useState("");
 
-  // Get location data
   const location = useLocation();
   
-  // Handle seats data - ensure it's an array and has values
   let selectedSeats = [];
-  if (location.state && location.state.seats) {
-    selectedSeats = Array.isArray(location.state.seats) ? 
-      location.state.seats : [location.state.seats];
+  if (location.state?.seats?.length) {
+    selectedSeats = location.state.seats;
   }
 
   const navigate = useNavigate();

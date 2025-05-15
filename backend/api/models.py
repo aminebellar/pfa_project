@@ -49,11 +49,12 @@ class Seat(models.Model):
 
 
 class Reservation(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reservations")
-    flight = models.ForeignKey(Flight, on_delete=models.CASCADE, related_name="reservations")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    flight = models.ForeignKey(Flight, on_delete=models.CASCADE)
+    seats = models.JSONField(default=list)
     reserved_at = models.DateTimeField(auto_now_add=True)
-    seats = models.ManyToManyField(Seat)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    
     def __str__(self):
         return f"{self.user.username} - {self.flight} - {self.seats.count()} sièges"
 

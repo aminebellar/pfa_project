@@ -112,12 +112,12 @@ function Flights() {
 
     setSelectedSeats([]);
     navigate(`/Reservation?flightId=${flightId}`, {
-      state: { seats: selectedSeats.length },
-    });
+  state: { seats: selectedSeats },
+});
   };
 
   const renderSeatsLayout = (flight) => {
-    const totalSeats = Math.min(flight.seats, 48);
+    const totalSeats = Math.min(flight.seats, 40);
     const seatsPerRow = 6;
     const rows = Math.ceil(totalSeats / seatsPerRow);
 

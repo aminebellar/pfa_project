@@ -9,13 +9,15 @@ const FichePassagers = () => {
 
   // Initialisation des passagers avec les champs nécessaires
   const [passengers, setPassengers] = useState(
-    Array.from({ length: seats }, () => ({
-      firstName: "",
-      lastName: "",
-      dateOfBirth: "",
-      cin: "",
-    }))
-  );
+  seats.map((seat) => ({
+    seatNumber: seat,
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+    cin: "",
+  }))
+);
+
 
   const [error, setError] = useState("");
 
@@ -48,13 +50,19 @@ const FichePassagers = () => {
     const user = storedUser ? JSON.parse(storedUser) : null;
 
     passengers.forEach(async (passenger) => {
-      await axios.post("http://127.0.0.1:8000/api/create_reservation/", {
-        flight: flight.id,
-        user: user ? user.id : 1,
-        seats: 1,
-        passenger_info: passenger,
-      });
-    });
+  await axios.post("http://127.0.0.1:8000/api/create_reservation/", {
+    flight: flight.id,
+    user: user ? user.id : 1,
+    seats: 1,
+    seat_number: passenger.seatNumber,
+    passenger_info: {
+      first_name: passenger.firstName,
+      last_name: passenger.lastName,
+      date_of_birth: passenger.dateOfBirth,
+      cin: passenger.cin,
+    },
+  });
+});
 
     navigate("/recu", {
       state: {

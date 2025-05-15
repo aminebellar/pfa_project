@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, viewsets
 from .models import Airline, Flight
 from .models import Reservation
 from django.contrib.auth.models import User
@@ -23,11 +23,19 @@ class SeatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seat
         fields = ['id', 'seat_number', 'is_reserved']
-
+        
 class ReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reservation
         fields = '__all__'
+
+class ReservationViewSet(viewsets.ModelViewSet):
+    queryset = Reservation.objects.all()
+    serializer_class = ReservationSerializer
+
+    def create(self, request, *args, **kwargs):
+        # Traitement personnalisé si nécessaire
+        return super().create(request, *args, **kwargs)
 
 
 class UserSerializer(serializers.ModelSerializer):

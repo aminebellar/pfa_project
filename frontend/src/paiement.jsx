@@ -1,12 +1,18 @@
 import React, { useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import jsPDF from "jspdf";
+import QRCode from "qrcode";
 
 const Paiement = () => {
   const location = useLocation();
   const { flight, seats, passengers, totalPrice } = location.state || {};
 
-  // Vérification des données
+  const [cardName, setCardName] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
+  const [cvv, setCvv] = useState("");
+  const [success, setSuccess] = useState(false);
+
   if (!flight || !seats || !passengers || !totalPrice) {
     return (
       <div className="text-center mt-20 text-lg text-red-600">
@@ -14,12 +20,6 @@ const Paiement = () => {
       </div>
     );
   }
-
-  const [cardName, setCardName] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [success, setSuccess] = useState(false);
 
   const handlePayment = (e) => {
     e.preventDefault();
@@ -30,61 +30,106 @@ const Paiement = () => {
     setSuccess(true);
   };
 
-  const handleDownloadReceipt = () => {
-    if (!flight || !seats || !totalPrice || !passengers) {
-      alert("Les informations de réservation sont incomplètes.");
-      return;
+  const handleDownloadReceipt = async () => {
+  try {
+    for (let i = 0; i < passengers.length; i++) {
+      const doc = new jsPDF({
+        orientation: "landscape",
+        unit: "pt",
+        format: [450, 280]
+      });
+
+      const passenger = passengers[i];
+      const seat = seats[i];
+
+      const qrData = `Vol ${flight.id}|${flight.airline_name}|${passenger.firstName} ${passenger.lastName}|${flight.departure_city}>${flight.arrival_city}|Siège ${seat}`;
+      const qrImage = await QRCode.toDataURL(qrData, { margin: 0, width: 100 });
+
+      // En-tête
+      doc.setFont("Helvetica", "bold");
+      doc.setFontSize(16);
+      doc.setTextColor(255);
+      doc.setFillColor(10, 50, 100);
+      doc.rect(0, 0, doc.internal.pageSize.width, 40, "F");
+      doc.text("CARTE D'EMBARQUEMENT", 20, 25);
+      doc.text(flight.airline_name.toUpperCase(), doc.internal.pageSize.width - 20, 25, {
+        align: "right"
+      });
+
+      // Corps
+      const startY = 60;
+      const middleX = 180;
+
+      doc.setFontSize(12);
+      doc.setTextColor(80);
+      doc.setFont("Helvetica", "normal");
+      doc.text("NOM DU PASSAGER", 20, startY);
+      doc.setFont("Helvetica", "bold");
+      doc.text(`${passenger.firstName} ${passenger.lastName}`.toUpperCase(), 20, startY + 15);
+
+      doc.setFont("Helvetica", "normal");
+      doc.text("DEPART", 20, startY + 40);
+      doc.setFont("Helvetica", "bold");
+      doc.text(flight.departure_city.toUpperCase(), 20, startY + 55);
+
+      doc.setFont("Helvetica", "normal");
+      doc.text("DESTINATION", 20, startY + 80);
+      doc.setFont("Helvetica", "bold");
+      doc.text(flight.arrival_city.toUpperCase(), 20, startY + 95);
+
+      doc.setFont("Helvetica", "normal");
+      doc.text("DATE", middleX, startY);
+      doc.setFont("Helvetica", "bold");
+      doc.text(new Date(flight.departure_time).toLocaleDateString(), middleX, startY + 15);
+
+      doc.setFont("Helvetica", "normal");
+      doc.text("VOL", middleX, startY + 40);
+      doc.setFont("Helvetica", "bold");
+      doc.text(flight.id.toString().toUpperCase(), middleX, startY + 55);
+
+      doc.setFont("Helvetica", "normal");
+      doc.text("SIÈGE", middleX, startY + 80);
+      doc.setFont("Helvetica", "bold");
+      doc.text(seat, middleX, startY + 95);
+
+      doc.addImage(qrImage, "PNG", 330, startY - 10, 100, 100);
+
+      // Barre du bas
+      doc.setFillColor(200, 200, 200);
+      doc.rect(0, 220, doc.internal.pageSize.width, 60, "F");
+      doc.setFontSize(10);
+      doc.setTextColor(40);
+      doc.text(`Heure d'embarquement: ${new Date(flight.departure_time).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      })}`, 20, 240);
+      doc.text(`Porte: ${String.fromCharCode(65 + Math.floor(Math.random() * 6))}${Math.floor(Math.random() * 30)}`, 20, 255);
+
+      // Bas de ticket
+      doc.setLineWidth(0.5);
+      doc.setDrawColor(150);
+      doc.setLineDash([5, 5], 0);
+      doc.line(20, 200, doc.internal.pageSize.width - 20, 200);
+
+      doc.setFontSize(8);
+      doc.setTextColor(100);
+      doc.text("NUMÉRO DE TICKET: " + flight.id.toString() + "-" + Math.random().toString(36).substr(2, 6).toUpperCase(), 330, 240);
+
+      // Générer un fichier par passager
+      doc.save(`ticket-${passenger.firstName}-${passenger.lastName}-${seat}.pdf`);
     }
+  } catch (error) {
+    console.error("Erreur lors du téléchargement des tickets :", error);
+    alert("Une erreur est survenue pendant la génération des tickets.");
+  }
+};
 
-    const doc = new jsPDF();
-
-    // Fond du ticket - forme rectangulaire
-    doc.setFillColor(255, 255, 255); // Couleur de fond du ticket (blanc)
-    doc.rect(10, 10, 190, 280, "F");
-
-    // Titre du ticket
-    doc.setFontSize(18);
-    doc.setTextColor(0, 0, 0);
-    doc.text("BILLET D'AVION", 105, 30, null, null, 'center');
-
-    // Informations de vol
-    doc.setFontSize(14);
-    doc.text(`Compagnie : ${flight.airline_name}`, 20, 60);
-    doc.text(`Numéro de vol : ${flight.id}`, 20, 70);
-    doc.text(`Classe : ${flight.class}`, 20, 80);
-
-    // Informations sur le vol
-    doc.text(`Départ : ${flight.departure_city}`, 20, 100);
-    doc.text(`Arrivée : ${flight.arrival_city}`, 20, 110);
-    doc.text(`Date de départ : ${new Date(flight.departure_time).toLocaleString()}`, 20, 120);
-    doc.text(`Date d'arrivée : ${new Date(flight.arrival_time).toLocaleString()}`, 20, 130);
-
-    // Détails du passager
-    doc.text("Passager", 20, 150);
-    doc.text(`Nom : ${passengers[0].firstName} ${passengers[0].lastName}`, 20, 160);
-    doc.text(`Siège : ${seats[0]}`, 20, 170);
-
-    // Informations sur le paiement
-    doc.text(`Total payé : ${totalPrice} €`, 20, 190);
-    doc.text(`Mode de paiement : Carte bancaire`, 20, 200);
-    doc.text(`Date du paiement : ${new Date().toLocaleString()}`, 20, 210);
-
-    // Ligne de séparation
-    doc.setLineWidth(0.5);
-    doc.setDrawColor(0, 0, 0);
-    doc.line(10, 230, 200, 230);
-
-    // Message de confirmation de paiement
-    doc.setFontSize(12);
-    doc.text("✅ Paiement effectué avec succès !", 105, 240, null, null, 'center');
-
-    // Sauvegarder le PDF
-    doc.save("ticket_avion.pdf");
-  };
 
   return (
     <div className="max-w-xl mx-auto mt-16 p-8 bg-white rounded-xl shadow-lg">
-      <h2 className="text-3xl font-bold text-green-700 mb-6 text-center">💳 Paiement sécurisé</h2>
+      <h2 className="text-3xl font-bold text-green-700 mb-6 text-center">
+        💳 Paiement sécurisé
+      </h2>
 
       {success ? (
         <div className="text-center">
@@ -97,7 +142,6 @@ const Paiement = () => {
           >
             Télécharger le ticket
           </button>
-
           <br />
           <Link
             to="/home"
@@ -115,7 +159,7 @@ const Paiement = () => {
               value={cardName}
               onChange={(e) => setCardName(e.target.value)}
               className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Jean Dupont"
+              placeholder="NOM COMPLET"
             />
           </div>
 
@@ -124,7 +168,13 @@ const Paiement = () => {
             <input
               type="text"
               value={cardNumber}
-              onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, "").replace(/(\d{4})(?=\d)/g, "$1 "))} 
+              onChange={(e) =>
+                setCardNumber(
+                  e.target.value
+                    .replace(/\D/g, "")
+                    .replace(/(\d{4})(?=\d)/g, "$1 ")
+                )
+              }
               className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="1234 5678 9012 3456"
               maxLength={19}
@@ -137,7 +187,13 @@ const Paiement = () => {
               <input
                 type="text"
                 value={expiryDate}
-                onChange={(e) => setExpiryDate(e.target.value)}
+                onChange={(e) => {
+                  let value = e.target.value.replace(/\D/g, "");
+                  if (value.length > 2) {
+                    value = value.slice(0, 2) + "/" + value.slice(2);
+                  }
+                  setExpiryDate(value.slice(0, 5));
+                }}
                 className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="MM/AA"
                 maxLength={5}
