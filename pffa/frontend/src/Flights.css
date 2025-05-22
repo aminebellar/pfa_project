@@ -1,0 +1,11 @@
+/* Flights.css */
+@keyframes gradientBG {
+  0% { background-position: 0% 50%;}
+  50% { background-position: 100% 50%;}
+  100% { background-position: 0% 50%;}
+}
+.animate-gradient {
+  background: linear-gradient(120deg, #e0e7ff, #f0f9ff, #fff 80%);
+  background-size: 200% 200%;
+  animation: gradientBG 12s ease-in-out infinite;
+}

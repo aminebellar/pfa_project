@@ -1,0 +1,32 @@
+@keyframes gradientBG {
+  0% { background-position: 0% 50%;}
+  50% { background-position: 100% 50%;}
+  100% { background-position: 0% 50%;}
+}
+.animate-gradient {
+  background: linear-gradient(120deg, #e0e7ff, #f0f9ff, #fff 80%);
+  background-size: 200% 200%;
+  animation: gradientBG 12s ease-in-out infinite;
+}
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(40px);}
+  to { opacity: 1; transform: none;}
+}
+.animate-fadein { animation: fadein 1.2s cubic-bezier(.4,0,.2,1) both; }
+.animate-fadein-slow { animation: fadein 2s cubic-bezier(.4,0,.2,1) both; }
+@keyframes gradientText {
+  0%,100% { background-position: 0% 50%;}
+  50% { background-position: 100% 50%;}
+}
+.animate-gradient-text {
+  background-size: 200% 200%;
+  animation: gradientText 6s ease-in-out infinite;
+}
+@keyframes cloud1 { 0%{left:10%} 100%{left:80%} }
+@keyframes cloud2 { 0%{right:20%} 100%{right:70%} }
+@keyframes cloud3 { 0%{left:50%} 100%{left:10%} }
+.animate-cloud1 { animation: cloud1 30s linear infinite alternate; }
+.animate-cloud2 { animation: cloud2 40s linear infinite alternate; }
+.animate-cloud3 { animation: cloud3 35s linear infinite alternate; }
+@keyframes spin-slow { 100% { transform: rotate(360deg); } }
+.animate-spin-slow { animation: spin-slow 6s linear infinite; }

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fly High ✈️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-r from-sky-100 to-blue-200 min-h-screen flex flex-col items-center justify-center p-6">
+
+    <div class="bg-white rounded-2xl shadow-2xl p-10 max-w-2xl w-full text-center">
+        <h1 class="text-4xl font-bold text-blue-700 mb-4">Welcome to Fly High ✈️</h1>
+        <p class="text-gray-700 text-lg mb-6">
+            Fly High is a flight reservation platform powered by the robust <span class="font-semibold text-blue-500">Django</span> backend framework.
+        </p>
+
+        <div class="flex justify-center mb-6">
+            <img src="https://cdn-icons-png.flaticon.com/512/633/633759.png" alt="Plane icon" class="w-24 h-24">
+        </div>
+
+        <p class="text-gray-600 mb-8">
+            Built with Python, Django provides a secure, scalable and fast foundation for managing airlines, flights, and reservations via powerful REST APIs.
+        </p>
+
+        <div class="space-x-4">
+            <a href="api/flights/" class="bg-blue-600 text-white px-6 py-2 rounded-xl shadow hover:bg-blue-700 transition">
+                View Flights
+            </a>
+            <a href="/admin/" class="bg-gray-700 text-white px-6 py-2 rounded-xl shadow hover:bg-gray-800 transition">
+                Admin Panel
+            </a>
+        </div>
+    </div>
+
+    <footer class="mt-10 text-gray-500 text-sm">
+        &copy; 2025 Fly High. All rights reserved.
+    </footer>
+</body>
+</html>
